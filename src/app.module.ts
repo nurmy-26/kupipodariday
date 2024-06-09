@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './users/entities/user.entity';
+import configuration from './config/configuration';
+import { DatabaseConfigFactory } from './config/db-config.factory';
+import { configSchema } from './config/joi-schema';
 import { UsersModule } from './users/users.module';
 import { WishesModule } from './wishes/wishes.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
@@ -11,24 +13,21 @@ import { OffersModule } from './offers/offers.module';
   controllers: [],
   providers: [],
   imports: [
-    // подключение .env
+    // подключение конфигурации
     ConfigModule.forRoot({
-      envFilePath: `.env`,
+      isGlobal: true,
+      validationSchema: configSchema,
+      load: [configuration],
     }),
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'student',
-      password: 'student',
-      database: 'nest_project',
-      entities: [User],
-      synchronize: true,
+    // подключение базы данных
+    TypeOrmModule.forRootAsync({
+      useClass: DatabaseConfigFactory
     }),
+    // подключение остальных модулей
     UsersModule,
     WishesModule,
     WishlistsModule,
     OffersModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
