@@ -5,12 +5,13 @@
 
 
 ## Используемые технологии и решения
-- Typescript в качестве основного языка проекта
-- PostgreSQL и ORM для хранения данных пользователей и карточек
-- Nest.js, Nest CLI, CRUD-методы
-- class-validator и class-transformer для валидации
-- Passport.js, JWT и bcrypt для аутентификации
-- Swagger для документации API
+- Typescript в качестве основного языка проекта;
+- PostgreSQL и ORM для хранения данных;
+- Nest.js, Nest CLI, CRUD-методы;
+- class-validator и class-transformer для валидации;
+- Passport.js, JWT и bcrypt для аутентификации;
+- Swagger для документации API;
+- Основные сущности: пользователи (users), подарки (wishes), списки желаний (wishlists), предложения скинуться на подарок (offers).
 
 
 ## Установка и запуск
