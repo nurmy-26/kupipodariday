@@ -3,40 +3,32 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  Query,
+  UseGuards,
 } from '@nestjs/common';
-import { WishesService } from './wishes.service';
+import { WishPaginator, WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { UpdateWishDto } from './dto/update-wish.dto';
+import { AuthUser } from 'src/utils/decorators/user.decorator';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('wishes')
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @ApiOperation({ summary: 'Создание нового желания' })
   @Post()
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  @UseGuards(JwtAuthGuard) // если не поставить гвард, будет падать ошибка Cannot read properties of undefined (reading 'id')
+  create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {
+    return this.wishesService.create(createWishDto, user.id);
   }
 
+  @ApiOperation({ summary: 'Получение всех желаний' })
   @Get()
-  findAll() {
-    return this.wishesService.findAll();
-  }
+  async findAll(@Query() query: { page: number; limit: number }): Promise<WishPaginator> {
+    console.log(query);
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+    return await this.wishesService.findAll(query);
   }
 }

@@ -1,19 +1,20 @@
 import * as Joi from 'joi'; // при другом варианте импорта ошибка
-import { ENV_EXAMPLE } from "./env-example";
 
 export const configSchema = Joi.object({
-  port: Joi.number().default(ENV_EXAMPLE.PORT),
+  app: Joi.object({
+    port: Joi.number().required(),
+    autoLoadEntities: Joi.boolean().required(),
+    synchronize: Joi.boolean().required(),
+  }),
   db: Joi.object({
-    host: Joi.string().default(ENV_EXAMPLE.POSTGRES_HOST),
-    user: Joi.string().default(ENV_EXAMPLE.POSTGRES_USER),
-    pass: Joi.string().default(ENV_EXAMPLE.POSTGRES_PASSWORD),
-    name: Joi.string().default(ENV_EXAMPLE.POSTGRES_DB),
-    port: Joi.number().default(ENV_EXAMPLE.POSTGRES_PORT),
+    host: Joi.string().required(),
+    user: Joi.string().required(),
+    pass: Joi.string().required(),
+    name: Joi.string().required(),
+    port: Joi.number().required(),
   }),
   jwt: Joi.object({
-    secret: Joi.string().default(ENV_EXAMPLE.JWT_SECRET),
-    ttl: Joi.number().default(ENV_EXAMPLE.JWT_TTL),
+    secret: Joi.string().required(),
+    ttl: Joi.number().required(),
   }),
-  autoLoadEntities: Joi.boolean().default(true),
-  synchronize: Joi.boolean().default(false),
 });

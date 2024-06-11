@@ -9,4 +9,5 @@ export enum ENV_EXAMPLE {
   POSTGRES_PORT=5432,
   JWT_SECRET='defaultKey',
   JWT_TTL=60*60*24, // 1 день
+  SALT_ROUNDS=10,
 }
