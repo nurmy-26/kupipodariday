@@ -1,21 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/swagger';
+import { UserResponseDto } from './user-response.dto';
 
-export class UserPublicResponseDto {
-  @ApiProperty({ example: 1 })
-  id: number;
-
-  @ApiProperty({ example: 'Илон Маск' })
-  username: string;
-
-  @ApiProperty({ example: 'Пока ничего не рассказал о себе' })
-  about: string;
-
-  @ApiProperty({ example: 'https://i.pravatar.cc/300' })
-  avatar: string;
-
-  @ApiProperty({ example: '2024-06-11T22:08:22.579Z' })
-  createdAt: Date;
-
-  @ApiProperty({ example: '2024-06-13T23:59:22.579Z' })
-  updatedAt: Date;
-}
+// исключаем поле email
+export class UserPublicResponseDto extends OmitType(UserResponseDto, ['email'] as const) {}

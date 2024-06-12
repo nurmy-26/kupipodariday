@@ -18,9 +18,9 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) { }
 
+  @UseGuards(LocalAuthGuard) // local исп-ся только в этом месте (при регистрации)
   @ApiOperation({ summary: 'Авторизация пользователя' })
   @ApiResponse({ status: 201, type: SigninUserResponseDto })
-  @UseGuards(LocalAuthGuard) // local исп-ся только в этом месте (при регистрации)
   @Post('signin')
   login(
     @AuthUser() user,
@@ -38,7 +38,8 @@ export class AuthController {
     const user = await this.usersService.signup(createUserDto);
     console.log(user);
 
-    return instanceToPlain(user); // { password, ...user }
+    // return instanceToPlain(user); // { password, ...user }
+    return user;
     // для преобразования экземпляра класса в обычный объект JavaScript
   }
 }

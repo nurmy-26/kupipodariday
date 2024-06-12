@@ -1,9 +1,10 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Length, Min } from "class-validator";
+import { Offer } from "src/offers/entities/offer.entity";
 import { UserPublicResponseDto } from "src/users/dto/user-public-profile-response.dto";
 import { User } from "src/users/entities/user.entity";
 import { DateBaseEntity } from "src/utils/base-entities/date-base.entity";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Wish extends DateBaseEntity {
@@ -50,22 +51,22 @@ export class Wish extends DateBaseEntity {
   @ApiProperty({ type: UserPublicResponseDto })
   owner: User; // имя поля, которое должно быть в таблице wishes
 
-
-  // owner: UserPublicProfileResponseDto;
-  // offers: Offer[];
+  // todo - проверить совпадение выходных данных со Swagger
+  @OneToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
 
   // для округления значений перед сохранением и обновлением
   @BeforeInsert()
   @BeforeUpdate()
   roundValues() {
     if (this.price !== undefined) {
-      this.price = parseFloat(this.price.toFixed(2));
+      this.price = parseFloat(this.price.toFixed(2)); // до сотых
     }
     if (this.raised !== undefined) {
       this.raised = parseFloat(this.raised.toFixed(2));
     }
     if (this.copied !== undefined) {
-      this.copied = Math.floor(this.copied);
+      this.copied = Math.floor(this.copied); // до целого
     }
   }
 }

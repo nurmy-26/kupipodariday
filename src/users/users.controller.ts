@@ -12,35 +12,49 @@ import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { WishesService } from 'src/wishes/wishes.service';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
 @Controller('users')
+@ApiExtraModels(User) // добавляем в Swagger схему User вручную, так как она не исп-ся в контроллерах и DTO напрямую
 export class UsersController {
   constructor(
     // тут получаем все сервисы, которые будем использовать в контроллере
     private readonly usersService: UsersService,
     private readonly wishesService: WishesService,
-  ) {}
+  ) { }
+
+  // @ApiOperation({ summary: 'Получение текущего пользователя' })
+  // @ApiResponse({ status: 200, type: UserResponseDto })
+  // @Get('me')
+  // async findSelf(@AuthUser() user: User): Promise<User> {
+  //   return this.usersService.findOne({
+  //     where: { id: user.id },
+  //     select: {
+  //       id: true,
+  //       username: true,
+  //       about: true,
+  //       avatar: true,
+  //       email: true,
+  //       createdAt: true,
+  //       updatedAt: true,
+  //     },
+  //   })
+  // }
 
   @ApiOperation({ summary: 'Получение текущего пользователя' })
   @ApiResponse({ status: 200, type: UserResponseDto })
   @Get('me')
   async findSelf(@AuthUser() user: User): Promise<User> {
-    return this.usersService.findOne({
-      where: { id: user.id },
-      select: {
-        id: true,
-        username: true,
-        about: true,
-        avatar: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    })
+    console.log(user.id)
+    console.log(user)
+    // todo - добавить другую ошибку
+    // if (!user || !user.id) {
+    //   throw new Error('Пользователь не найден или не авторизован');
+    // }
+    return await this.usersService.findCurrentUser(user.id);
   }
 
   @ApiOperation({ summary: 'Получение желаний текущего пользователя' })

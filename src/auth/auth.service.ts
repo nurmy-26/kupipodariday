@@ -12,6 +12,10 @@ export class AuthService {
   ) { }
 
   async validateUser(username: string, password: string): Promise<any> {
+    if (!username || !password) {
+      throw new Error('Имя и пароль должны быть предоставлены');
+    }
+
     const user = await this.usersService.findOne({
       where: { username },
       select: {
