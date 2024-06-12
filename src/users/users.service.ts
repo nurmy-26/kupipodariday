@@ -1,12 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { FindOneOptions, Repository } from 'typeorm';
 import { hashValue } from 'src/utils/helpers/hash';
-import { UserResponseDto } from './dto/user-response.dto';
 import checkUnique from 'src/utils/helpers/check-unique';
+import { ERR_MESSAGE } from 'src/utils/constants/error-messages';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -21,7 +22,7 @@ export class UsersService {
     await checkUnique(this.usersRepository, [
       { email: email },
       { username: username }
-    ], 'Пользователь с таким email или именем уже существует');  
+    ], ERR_MESSAGE.PROFILE_NAME_CONFLICT);
 
     const user = this.usersRepository.create({ // создаем в БД
       ...dto,
@@ -38,29 +39,37 @@ export class UsersService {
     return user;
   }
 
-  // используем в findSelf
   findOne(query: FindOneOptions<User>) {
     console.log(query)
     const data = this.usersRepository.findOneOrFail(query);
     if (!data) {
-      throw new Error('No data was found')
+      throw new NotFoundException(ERR_MESSAGE.RESOURCE_NOT_FOUND)
     }
-    // return this.usersRepository.findOneOrFail(query);
     return data;
   }
 
-  async findCurrentUser(userId: number): Promise<User> {
+  async findUserById(userId: number): Promise<User> {
     const query = {
-      where: { id: userId },
-      select: {
-        id: true,
-        username: true,
-        about: true,
-        avatar: true,
-        email: true,
-        createdAt: true,
-        updatedAt: true,
-      },
+      where: { id: userId }
+    };
+
+    return await this.findOne(query);
+  }
+
+  async findByUsername(username: string): Promise<User> {
+    const query = {
+      where: { username: username }
+    };
+
+    return await this.findOne(query);
+  }
+
+  async findByUsernameOrEmail(payload: FindUserDto): Promise<User | null> {
+    const query = {
+      where: [
+        { username: payload.query },
+        { email: payload.query }
+      ]
     };
 
     return await this.findOne(query);
@@ -73,7 +82,7 @@ export class UsersService {
     await checkUnique(this.usersRepository, [
       { email: email },
       { username: username }
-    ], 'Пользователь с таким email или именем уже существует', id);
+    ], ERR_MESSAGE.PROFILE_NAME_CONFLICT, id);
 
     const user = await this.findById(id);
     if (password) {

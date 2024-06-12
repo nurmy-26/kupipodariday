@@ -44,10 +44,30 @@ export class WishesService {
     }
   }
 
-  async findWishById(ownerId: number) {
+  async findWishesById(ownerId: number) {
     return await this.wishRepository.find({
       where: { owner: { id: ownerId } },
       relations: ['owner']
+    })
+  }
+
+  async findWishesByUsername(username: string) {
+    return await this.wishRepository.find({
+      where: { owner: { username: username } },
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        name: true,
+        link: true,
+        image: true,
+        price: true,
+        raised: true,
+        copied: true,
+        description: true,
+        offers: true,
+      }, 
+      relations: ['offers'] // какие связанные поля прислать в ответе
     })
   }
 }

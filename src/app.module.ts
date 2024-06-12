@@ -12,10 +12,12 @@ import { WishlistsModule } from './wishlists/wishlists.module';
 import { OffersModule } from './offers/offers.module';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
+import { AppService } from './app.service';
+import { AppController } from './app.controller';
 
 @Module({
-  controllers: [AuthController],
-  providers: [],
+  controllers: [AppController, AuthController],
+  providers: [AppService],
   imports: [
     // логирование
     WinstonModule.forRoot({

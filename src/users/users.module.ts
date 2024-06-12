@@ -12,7 +12,6 @@ import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 @Module({
   imports: [ 
     TypeOrmModule.forFeature([ User, Wish, Wishlist, Offer ]),
-    // forwardRef(() => AuthModule),
     forwardRef(() => WishesModule),
   ],
   controllers: [UsersController],

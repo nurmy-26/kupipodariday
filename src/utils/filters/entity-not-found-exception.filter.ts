@@ -16,7 +16,7 @@ export class EntityNotFoundErrorFilter implements ExceptionFilter {
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
-      testMessage: exception.message, // todo - удалить когда всё будет готово
+      testMessage: exception.message, // todo - удалить когда всё будет готово (для инфо об ошибке)
       message: ERR_MESSAGE.INVALID_AUTH,
     });
   }

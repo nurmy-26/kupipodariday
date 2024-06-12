@@ -20,26 +20,22 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard) // local исп-ся только в этом месте (при регистрации)
   @ApiOperation({ summary: 'Авторизация пользователя' })
-  @ApiResponse({ status: 201, type: SigninUserResponseDto })
   @Post('signin')
   login(
     @AuthUser() user,
     @Body() signinUserDto: SigninUserDto
-  ): Promise<any> {
+  ): Promise<SigninUserResponseDto> {
     console.log(user);
 
     return this.authService.login(user);
   }
 
   @ApiOperation({ summary: 'Регистрация пользователя' })
-  @ApiResponse({ status: 201, type: UserResponseDto })
+  // @ApiResponse({ status: 201, type: UserResponseDto }) - вместо этого указывать возвращаемый тип
   @Post('signup')
-  async signup(@Body() createUserDto: CreateUserDto): Promise<any> {
+  async signup(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     const user = await this.usersService.signup(createUserDto);
-    console.log(user);
 
-    // return instanceToPlain(user); // { password, ...user }
     return user;
-    // для преобразования экземпляра класса в обычный объект JavaScript
   }
 }

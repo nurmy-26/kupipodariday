@@ -4,6 +4,8 @@ import {
   Body,
   Patch,
   UseGuards,
+  Param,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,11 +16,13 @@ import { Wish } from 'src/wishes/entities/wish.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
+import { UserPublicResponseDto } from './dto/user-public-profile-response.dto';
+import { UserWishesDto } from './dto/user-wishes.dto';
+import { FindUserDto } from './dto/find-user.dto';
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('users')
 @Controller('users')
-@ApiExtraModels(User) // добавляем в Swagger схему User вручную, так как она не исп-ся в контроллерах и DTO напрямую
 export class UsersController {
   constructor(
     // тут получаем все сервисы, которые будем использовать в контроллере
@@ -26,48 +30,40 @@ export class UsersController {
     private readonly wishesService: WishesService,
   ) { }
 
-  // @ApiOperation({ summary: 'Получение текущего пользователя' })
-  // @ApiResponse({ status: 200, type: UserResponseDto })
-  // @Get('me')
-  // async findSelf(@AuthUser() user: User): Promise<User> {
-  //   return this.usersService.findOne({
-  //     where: { id: user.id },
-  //     select: {
-  //       id: true,
-  //       username: true,
-  //       about: true,
-  //       avatar: true,
-  //       email: true,
-  //       createdAt: true,
-  //       updatedAt: true,
-  //     },
-  //   })
-  // }
-
   @ApiOperation({ summary: 'Получение текущего пользователя' })
-  @ApiResponse({ status: 200, type: UserResponseDto })
   @Get('me')
-  async findSelf(@AuthUser() user: User): Promise<User> {
-    console.log(user.id)
-    console.log(user)
-    // todo - добавить другую ошибку
-    // if (!user || !user.id) {
-    //   throw new Error('Пользователь не найден или не авторизован');
-    // }
-    return await this.usersService.findCurrentUser(user.id);
+  async findById(@AuthUser() user: User): Promise<UserResponseDto> {
+    return await this.usersService.findUserById(user.id);
   }
 
   @ApiOperation({ summary: 'Получение желаний текущего пользователя' })
   @Get('me/wishes')
   async findSelfWishes(@AuthUser() user: User): Promise<Wish[]> {
-    return await this.wishesService.findWishById(user.id);
+    return await this.wishesService.findWishesById(user.id);
   }
 
   @ApiOperation({ summary: 'Изменение текущего пользователя' })
-  @ApiResponse({ status: 200, type: UpdateUserDto })
   @Patch('me')
-  async updateSelf(@AuthUser() user: User, @Body() dto: UpdateUserDto) {
+  async updateSelf(@AuthUser() user: User, @Body() dto: UpdateUserDto): Promise<UserResponseDto> {
     const { id } = user;
     return this.usersService.update(id, dto);
+  }
+
+  @ApiOperation({ summary: 'Получение массива с пользователем' })
+  @Post('find')
+  async searchUser(@AuthUser() user: User, @Body() dto: FindUserDto): Promise<UserResponseDto> {
+    return await this.usersService.findByUsernameOrEmail(dto);
+  }
+
+  @ApiOperation({ summary: 'Получение пользователя по username' })
+  @Get(':username')
+  async findUserByUsername(@AuthUser() user: User, @Param('username') username: string): Promise<UserPublicResponseDto> {
+    return await this.usersService.findByUsername(username);
+  }
+
+  @ApiOperation({ summary: 'Получение желаний пользователя' })
+  @Get(':username/wishes')
+  async findWishesByUsername(@AuthUser() user: User, @Param('username') username: string): Promise<UserWishesDto[]> {
+    return await this.wishesService.findWishesByUsername(username);
   }
 }
