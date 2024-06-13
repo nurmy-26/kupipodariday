@@ -54,7 +54,6 @@ export class Wish extends DateBaseEntity {
   @ApiProperty({ type: UserPublicResponseDto })
   owner: User; // имя поля, которое должно быть в таблице wishes
 
-  // todo - проверить совпадение выходных данных со Swagger
   @OneToMany(() => Offer, (offer) => offer.item)
   offers: Offer[];
 

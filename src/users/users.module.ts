@@ -8,11 +8,13 @@ import { WishesModule } from 'src/wishes/wishes.module';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
+import { OffersModule } from 'src/offers/offers.module';
 
 @Module({
   imports: [ 
     TypeOrmModule.forFeature([ User, Wish, Wishlist, Offer ]),
     forwardRef(() => WishesModule),
+    forwardRef(() => OffersModule),
   ],
   controllers: [UsersController],
   providers: [UsersService],

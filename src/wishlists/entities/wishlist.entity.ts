@@ -25,7 +25,6 @@ export class Wishlist extends DateBaseEntity {
   @ApiProperty({ type: UserPublicResponseDto })
   owner: User;
 
-  // todo - проверить совпадение выходных данных со Swagger
   @ManyToMany(() => Wish)
   @JoinTable()
   items: Wish[];

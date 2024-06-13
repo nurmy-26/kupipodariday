@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundEx
 import { CreateWishDto } from './dto/create-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
-import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { ERR_MESSAGE } from 'src/utils/constants/error-messages';
@@ -33,6 +33,13 @@ export class WishesService {
     return this.wishRepository.save(wish);
   }
 
+  async findWishById(wishId: number) {
+    return await this.wishRepository.findOneOrFail({
+      where: {id: wishId },
+      relations: ['owner']
+    })
+  }
+
   async findAll(query: {
     page: number; limit: number
   }): Promise<WishPaginator> {
@@ -48,6 +55,23 @@ export class WishesService {
       totalCount,
       totalPage
     }
+  }
+
+  // увеличение поля raised на offerValue
+  async updateRaised(offerValue: number, wishId: string) {
+    const numericId = Number(wishId);
+    if (isNaN(numericId)) {
+      throw new BadRequestException(ERR_MESSAGE.INVALID_DATA);
+    }
+
+    const wish = await this.wishRepository.findOneOrFail({
+      where: { id: numericId },
+    });
+
+    return await this.wishRepository.save({
+      ...wish,
+      raised: wish.raised + offerValue,
+    });
   }
 
   async getLastWishes() {
@@ -68,7 +92,7 @@ export class WishesService {
     })
   }
 
-  // метод для исп-я в других методах
+  // метод для исп-я в других методах (поиск по СВОИМ подаркам)
   async findOwnerWishById(
     id: string,
     userId: number
@@ -118,30 +142,28 @@ export class WishesService {
   }
 
   async findOne(id: string, userId: number) {
-    return await this.findOwnerWishById(
-      id,
-      userId
-    )
+    return await this.findOwnerWishById(id, userId);
   }
 
   async update(id: string, dto: UpdateWishDto, userId: number) {
-    const wish = await this.findOwnerWishById(
-      id,
-      userId
-    )
+    const wish = await this.findOwnerWishById(id, userId);
+
+    // нельзя изменять стоимость, если уже есть желающие скинуться
+    const raisedIsNotNull = wish.raised !== 0;
+    const priceIsNotEmpty = dto.price !== undefined;
+    if (raisedIsNotNull && priceIsNotEmpty) {
+      throw new BadRequestException(ERR_MESSAGE.FORBIDDEN_PRICE_CHANGE);
+    }
 
     this.wishRepository.save({
       ...wish,
       ...dto
     });
-    // return "Желание успешно изменено!";
+    return "Желание успешно изменено!";
   }
 
   async remove(id: string, userId: number) {
-    const wish = await this.findOwnerWishById(
-      id,
-      userId
-    );
+    const wish = await this.findOwnerWishById(id, userId);
 
     return await this.wishRepository.remove(wish);
   }
@@ -168,7 +190,7 @@ export class WishesService {
         description: wish.description,
       };
 
-      // массив промисов для параллельного выполнения
+      // массив промисов для транзакции
       const operations = [
         this.create(dto, userId),
         this.wishRepository.save({

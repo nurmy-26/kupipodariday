@@ -10,11 +10,10 @@ export class Offer extends DateBaseEntity {
   @ApiProperty({ example: 1, description: 'Уникальный идентификатор' })
   id: number;
 
-  // todo - проверить совпадение выходных данных со Swagger
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
 
-  @Column({ type: 'decimal', scale: 2 })
+  @Column({ type: 'real' })
   @ApiProperty({ example: 100, description: 'Сумма поддержки' })
   amount: number;
 
@@ -22,7 +21,6 @@ export class Offer extends DateBaseEntity {
   @ApiProperty({ example: false, description: 'Показывать ли информацию о скидывающемся в списке' })
   hidden: boolean;
 
-  // todo - в Swagger не должен отображаться password
   @ManyToOne(() => User, (user) => user.offers)
   user: User;
 
