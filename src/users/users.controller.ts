@@ -39,7 +39,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Получение желаний текущего пользователя' })
   @Get('me/wishes')
   async findSelfWishes(@AuthUser() user: User): Promise<Wish[]> {
-    return await this.wishesService.findWishesById(user.id);
+    return await this.wishesService.findWishesByOwnerId(user.id);
   }
 
   @ApiOperation({ summary: 'Изменение текущего пользователя' })
@@ -51,19 +51,19 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Получение массива с пользователем' })
   @Post('find')
-  async searchUser(@AuthUser() user: User, @Body() dto: FindUserDto): Promise<UserResponseDto> {
+  async findMany(@Body() dto: FindUserDto): Promise<UserResponseDto[]> {
     return await this.usersService.findByUsernameOrEmail(dto);
   }
 
   @ApiOperation({ summary: 'Получение пользователя по username' })
   @Get(':username')
-  async findUserByUsername(@AuthUser() user: User, @Param('username') username: string): Promise<UserPublicResponseDto> {
+  async findUserByUsername(@Param('username') username: string): Promise<UserPublicResponseDto> {
     return await this.usersService.findByUsername(username);
   }
 
   @ApiOperation({ summary: 'Получение желаний пользователя' })
   @Get(':username/wishes')
-  async findWishesByUsername(@AuthUser() user: User, @Param('username') username: string): Promise<UserWishesDto[]> {
+  async findWishesByUsername(@Param('username') username: string): Promise<UserWishesDto[]> {
     return await this.wishesService.findWishesByUsername(username);
   }
 }

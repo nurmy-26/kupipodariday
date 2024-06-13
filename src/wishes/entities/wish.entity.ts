@@ -4,6 +4,7 @@ import { Offer } from "src/offers/entities/offer.entity";
 import { UserPublicResponseDto } from "src/users/dto/user-public-profile-response.dto";
 import { User } from "src/users/entities/user.entity";
 import { DateBaseEntity } from "src/utils/base-entities/date-base.entity";
+import roundToDecimal from "src/utils/helpers/round-to-decimal";
 import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -26,12 +27,14 @@ export class Wish extends DateBaseEntity {
   @ApiProperty({ example: 'https://example.com', description: 'Ссылка на изображение подарка' })
   image: string;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 1 })
+  // @Column({ type: 'decimal', scale: 2, default: 1 })
+  @Column({ type: 'real', default: 1 })
   @Min(1)
   @ApiProperty({ example: 500, description: 'Стоимость подарка' })
   price: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2, default: 0 })
+  // @Column({ type: 'decimal', scale: 2, default: 0 })
+  @Column({ type: 'real', default: 0 })
   @Min(1)
   @ApiProperty({ example: 100, description: 'Собранная сумма' })
   raised: number;
@@ -57,16 +60,9 @@ export class Wish extends DateBaseEntity {
 
   // для округления значений перед сохранением и обновлением
   @BeforeInsert()
-  @BeforeUpdate()
+  @BeforeUpdate() // todo - выяснить, почему не вызывается при обновлении значения
   roundValues() {
-    if (this.price !== undefined) {
-      this.price = parseFloat(this.price.toFixed(2)); // до сотых
-    }
-    if (this.raised !== undefined) {
-      this.raised = parseFloat(this.raised.toFixed(2));
-    }
-    if (this.copied !== undefined) {
-      this.copied = Math.floor(this.copied); // до целого
-    }
+    roundToDecimal(this.price); // до сотых
+    roundToDecimal(this.raised); // до сотых
   }
 }

@@ -9,15 +9,22 @@ export class EntityNotFoundErrorFilter implements ExceptionFilter {
   catch(exception: EntityNotFoundError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
-    const request = ctx.getRequest<Request>();
-    const status = HttpStatus.NOT_FOUND; // 404
+
+    let entity: string;
+    const regex = /entity of type "(.*?)"/;
+    const match = exception.message.match(regex);
+    if (match && match[1]) {
+      entity = match[1];
+    } else {
+      entity = 'Unknown';
+    }
+
+    const status = HttpStatus.NOT_FOUND
 
     response.status(status).json({
+      message: `${ERR_MESSAGE.ENTITY_NOT_FOUND}: ${entity}. ${ERR_MESSAGE.NOT_FOUND_HINT}`,
+      error: 'Not Found',
       statusCode: status,
-      timestamp: new Date().toISOString(),
-      path: request.url,
-      testMessage: exception.message, // todo - удалить когда всё будет готово (для инфо об ошибке)
-      message: ERR_MESSAGE.INVALID_AUTH,
     });
   }
 }

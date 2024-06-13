@@ -14,7 +14,7 @@ export class Offer extends DateBaseEntity {
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
 
-  @Column({ type: 'decimal', precision: 5, scale: 2 })
+  @Column({ type: 'decimal', scale: 2 })
   @ApiProperty({ example: 100, description: 'Сумма поддержки' })
   amount: number;
 
