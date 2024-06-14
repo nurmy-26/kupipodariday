@@ -12,11 +12,12 @@ export const AuthUser = createParamDecorator( // createParamDecorator - для �
   }
 )
 
-// если возвращать только id (а не объект user)
-// export const AuthUser = createParamDecorator(
-//   (data: unknown, ctx: ExecutionContext): number => {
-//     const request = ctx.switchToHttp().getRequest();
+// todo - заменить user.id везде на userId
+// будет возвращать только id пользователя, а не весь объект user
+export const AuthUserId = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext): number => {
+    const request = ctx.switchToHttp().getRequest();
 
-//     return request.user.id;
-//   }
-// )
+    return request.user.id;
+  }
+)

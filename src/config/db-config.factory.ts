@@ -5,7 +5,7 @@ import { join } from "path";
 
 @Injectable() // чтоб работал как сервис внутри TypeORM
 export class DatabaseConfigFactory implements TypeOrmOptionsFactory {
-  constructor(private configService: ConfigService) { } // инжектим ConfigService, чтоб был доступен в this
+  constructor(private configService: ConfigService) {} // инжектим ConfigService, чтоб был доступен в this
   createTypeOrmOptions(): TypeOrmModuleOptions {
       return {
         type: 'postgres',

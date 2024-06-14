@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { WishPaginator, WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { AuthUser } from 'src/utils/decorators/user.decorator';
+import { AuthUserId } from 'src/utils/decorators/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Wish } from './entities/wish.entity';
@@ -21,13 +21,13 @@ import { User } from 'src/users/entities/user.entity';
 @ApiTags('wishes')
 @Controller('wishes')
 export class WishesController {
-  constructor(private readonly wishesService: WishesService) { }
+  constructor(private readonly wishesService: WishesService) {}
 
   @ApiOperation({ summary: 'Создание нового желания' })
   @UseGuards(JwtAuthGuard) // если не поставить гвард, будет падать ошибка Cannot read properties of undefined (reading 'id')
   @Post()
-  create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {
-    return this.wishesService.create(createWishDto, user.id);
+  create(@Body() createWishDto: CreateWishDto, @AuthUserId() userId: User["id"]) {
+    return this.wishesService.create(createWishDto, userId);
   }
 
   @ApiOperation({ summary: 'Получение последних 40 желаний' })
@@ -44,40 +44,31 @@ export class WishesController {
     return await this.wishesService.getTopWishes();
   }
 
-  @ApiOperation({ summary: 'Получение своего желания по id' })
+  @ApiOperation({ summary: 'Получение желания по id' })
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async findOne(@AuthUser() user: User, @Param('id') id: string): Promise<Wish> {
-    return await this.wishesService.findOne(id, user.id);
+  async findOne(@Param('id') id: string): Promise<Wish> {
+    return await this.wishesService.findWishById(id);
   }
 
   @ApiOperation({ summary: 'Обновление своего желания по id' })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  async update(@AuthUser() user: User, @Param('id') id: string, @Body() dto: UpdateWishDto) {
-    return await this.wishesService.update(id, dto, user.id);
+  async update(@AuthUserId() userId: User["id"], @Param('id') id: string, @Body() dto: UpdateWishDto) {
+    return await this.wishesService.update(id, dto, userId);
   }
 
   @ApiOperation({ summary: 'Удаление своего желания по id' })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  async remove(@AuthUser() user: User, @Param('id') id: string): Promise<Wish> {
-    return await this.wishesService.remove(id, user.id);
+  async remove(@AuthUserId() userId: User["id"], @Param('id') id: string): Promise<Wish> {
+    return await this.wishesService.remove(id, userId);
   }
 
-  @ApiOperation({ summary: 'Копирование чужого желания по id' })
+  @ApiOperation({ summary: 'Копирование желания по id' })
   @UseGuards(JwtAuthGuard)
   @Post(':id/copy')
-  async copy(@AuthUser() user: User, @Param('id') id: string) {
-    return await this.wishesService.copy(id, user.id);
-  }
-
-  // пример с пагинацией
-  @ApiOperation({ summary: 'Получение всех желаний' })
-  @Get()
-  async findAll(@Query() query: { page: number; limit: number }): Promise<WishPaginator> {
-    console.log(query);
-
-    return await this.wishesService.findAll(query);
+  async copy(@AuthUserId() userId: User["id"], @Param('id') id: string) {
+    return await this.wishesService.copy(id, userId);
   }
 }

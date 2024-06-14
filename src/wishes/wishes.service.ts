@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
@@ -6,7 +6,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { ERR_MESSAGE } from 'src/utils/constants/error-messages';
-import { DESC, LAST_WISHES, TOP_WISHES } from 'src/utils/constants/data-base';
+import { ASC, DESC, LAST_WISHES, TOP_WISHES } from 'src/utils/constants/data-base';
 
 export type WishPaginator = {
   data: Wish[];
@@ -23,7 +23,7 @@ export class WishesService {
     private dataSource: DataSource,
     @InjectRepository(Wish) private readonly wishRepository: Repository<Wish>,
     private readonly usersService: UsersService // инжектим UsersService, так как инжектить репозиторий другого модуля плохая практика
-  ) { }
+  ) {}
 
   async create(createWishDto: CreateWishDto, userId: number) {
     // перед тем как создавать - находим пользователя
@@ -33,28 +33,27 @@ export class WishesService {
     return this.wishRepository.save(wish);
   }
 
-  async findWishById(wishId: number) {
+  async findWishById(wishId: number | string) {
+    if (typeof wishId === 'string') {
+      wishId = Number(wishId);
+    }
     return await this.wishRepository.findOneOrFail({
       where: {id: wishId },
       relations: ['owner']
     })
   }
 
-  async findAll(query: {
-    page: number; limit: number
-  }): Promise<WishPaginator> {
-    const skip = (query.page - 1) * query.limit;
-    console.log(skip)
-    const [data, totalCount] = await this.wishRepository.findAndCount({ take: query.limit, skip });
-    const totalPage = Math.ceil(totalCount / query.limit);
-
-    return {
-      data,
-      page: query.page,
-      siz: query.limit,
-      totalCount,
-      totalPage
+  async findAllByIds(wishesIdList: number[]) {
+    let res: Wish[] = [];
+    for (let i = 0; i < wishesIdList.length - 1; i++) {
+      const wish = await this.wishRepository.findOneOrFail({
+        where: { id: wishesIdList[i] },
+        // order: { copied: ASC },
+        relations: ['owner', 'offers']
+      })
+      res.push(wish);
     }
+    return res;
   }
 
   // увеличение поля raised на offerValue

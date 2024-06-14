@@ -4,7 +4,7 @@ import { JwtModuleOptions, JwtOptionsFactory } from "@nestjs/jwt";
 
 @Injectable()
 export class JwtConfigFactory implements JwtOptionsFactory {
-  constructor(private configService: ConfigService) { }
+  constructor(private configService: ConfigService) {}
   createJwtOptions(): JwtModuleOptions {
       return {
         // если ошибка с secret key - либо ошибка тут, либо в jwt.strategy #JwtStrategy requires a secret or key

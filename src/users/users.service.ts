@@ -9,6 +9,8 @@ import checkUnique from 'src/utils/helpers/check-unique';
 import { ERR_MESSAGE } from 'src/utils/constants/error-messages';
 import { FindUserDto } from './dto/find-user.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { WishlistsService } from 'src/wishlists/wishlists.service';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 
 @Injectable()
 export class UsersService {
@@ -106,6 +108,19 @@ export class UsersService {
     return this.usersRepository.save({
       ...user,
       ...dto
+    });
+  }
+
+  // добавление нового вишлиста в поле wishlists
+  async updateWishlists(wishlist: Wishlist, userId) {
+    const user = await this.findUserById(userId);
+
+    return await this.usersRepository.save({
+      ...user,
+      wishlists: [
+        ...user.wishlists,
+        wishlist
+      ]
     });
   }
 }

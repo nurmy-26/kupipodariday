@@ -15,7 +15,7 @@ export class OffersService {
     private readonly offersRepository: Repository<Offer>,
     private readonly usersService: UsersService,
     private readonly wishesService: WishesService
-  ) { }
+  ) {}
 
   async create(dto: CreateOfferDto, userId: number) {
     const itemId = (dto.itemId).toString();
@@ -52,12 +52,12 @@ export class OffersService {
       await Promise.all(operations);
 
       await queryRunner.commitTransaction();
-      return 'Удалось внести пожертвование';
+      // return 'Удалось внести пожертвование';
 
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
-      return 'НЕ удалось внести пожертвование';
+      // return 'НЕ удалось внести пожертвование';
     } finally {
       await queryRunner.release();
     }

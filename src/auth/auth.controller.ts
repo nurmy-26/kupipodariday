@@ -2,7 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { AuthService } from './auth.service';
 import { UsersService } from 'src/users/users.service';
-import { AuthUser } from 'src/utils/decorators/user.decorator';
+import { AuthUserId } from 'src/utils/decorators/user.decorator';
 import { SigninUserDto } from './dto/signin-user.dto';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { instanceToPlain } from 'class-transformer';
@@ -16,13 +16,13 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
-  ) { }
+  ) {}
 
   @UseGuards(LocalAuthGuard) // local исп-ся только в этом месте (при регистрации)
   @ApiOperation({ summary: 'Авторизация пользователя' })
   @Post('signin')
   login(
-    @AuthUser() user,
+    @AuthUserId() user,
     @Body() signinUserDto: SigninUserDto
   ): Promise<SigninUserResponseDto> {
     console.log(user);

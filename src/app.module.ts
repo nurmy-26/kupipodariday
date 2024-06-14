@@ -51,4 +51,4 @@ import { AppController } from './app.controller';
     AuthModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

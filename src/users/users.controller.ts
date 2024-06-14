@@ -10,7 +10,7 @@ import {
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { AuthUser } from 'src/utils/decorators/user.decorator';
+import { AuthUserId } from 'src/utils/decorators/user.decorator';
 import { WishesService } from 'src/wishes/wishes.service';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
@@ -28,23 +28,23 @@ export class UsersController {
     // тут получаем все сервисы, которые будем использовать в контроллере
     private readonly usersService: UsersService,
     private readonly wishesService: WishesService,
-  ) { }
+  ) {}
 
   @ApiOperation({ summary: 'Получение текущего пользователя' })
   @Get('me')
-  async findById(@AuthUser() user: User): Promise<UserResponseDto> {
-    return await this.usersService.findUserById(user.id);
+  async findById(@AuthUserId() userId: User["id"]): Promise<UserResponseDto> {
+    return await this.usersService.findUserById(userId);
   }
 
   @ApiOperation({ summary: 'Получение желаний текущего пользователя' })
   @Get('me/wishes')
-  async findSelfWishes(@AuthUser() user: User): Promise<Wish[]> {
-    return await this.wishesService.findWishesByOwnerId(user.id);
+  async findSelfWishes(@AuthUserId() userId: User["id"]): Promise<Wish[]> {
+    return await this.wishesService.findWishesByOwnerId(userId);
   }
 
   @ApiOperation({ summary: 'Изменение текущего пользователя' })
   @Patch('me')
-  async updateSelf(@AuthUser() user: User, @Body() dto: UpdateUserDto): Promise<UserResponseDto> {
+  async updateSelf(@AuthUserId() user: User, @Body() dto: UpdateUserDto): Promise<UserResponseDto> {
     const { id } = user;
     return this.usersService.update(id, dto);
   }
