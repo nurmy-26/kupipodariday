@@ -1,4 +1,8 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { Wishlist } from './entities/wishlist.entity';
@@ -15,13 +19,13 @@ export class WishlistsService {
     @InjectRepository(Wishlist)
     private readonly wishlistsRepository: Repository<Wishlist>,
     private readonly usersService: UsersService,
-    private readonly wishesService: WishesService
-  ) { }
+    private readonly wishesService: WishesService,
+  ) {}
 
   async create(userId: number, dto: CreateWishlistDto) {
     const user = await this.usersService.findById(userId);
     const wishes = await this.wishesService.findAllByIds(dto.itemsId);
-    
+
     return await this.wishlistsRepository.save({
       name: dto.name,
       image: dto.image,
@@ -41,9 +45,9 @@ export class WishlistsService {
   }
 
   async findAll() {
-    return await this.wishlistsRepository.find(({
-      relations: ['owner', 'items']
-    }));
+    return await this.wishlistsRepository.find({
+      relations: ['owner', 'items'],
+    });
   }
 
   async findById(id: string) {
@@ -51,7 +55,7 @@ export class WishlistsService {
 
     return await this.wishlistsRepository.findOneOrFail({
       where: { id: numericId },
-      relations: ['owner', 'items']
+      relations: ['owner', 'items'],
     });
   }
 
@@ -64,7 +68,7 @@ export class WishlistsService {
 
     const wishlist = await this.wishlistsRepository.findOneOrFail({
       where: { id: numericId },
-      relations: ['owner', 'items']
+      relations: ['owner', 'items'],
     });
 
     if (wishlist.owner.id !== userId) {
@@ -79,7 +83,7 @@ export class WishlistsService {
 
     return await this.wishlistsRepository.save({
       ...wish,
-      ...dto
+      ...dto,
     });
   }
 

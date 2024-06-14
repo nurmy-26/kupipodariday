@@ -1,8 +1,8 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from "@nestjs/common";
-import { EntityNotFoundError } from "typeorm/error/EntityNotFoundError";
-import { Response } from "express";
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
+import { Response } from 'express';
 import { HttpStatus } from '@nestjs/common';
-import { ERR_MESSAGE } from "../constants/error-messages";
+import { ERR_MESSAGE } from '../constants/error-messages';
 
 @Catch(EntityNotFoundError) // для ошибок TypeORM если не найдена запрашиваемая сущность
 export class EntityNotFoundErrorFilter implements ExceptionFilter {
@@ -19,7 +19,7 @@ export class EntityNotFoundErrorFilter implements ExceptionFilter {
       entity = 'Unknown';
     }
 
-    const status = HttpStatus.NOT_FOUND
+    const status = HttpStatus.NOT_FOUND;
 
     response.status(status).json({
       message: `${ERR_MESSAGE.ENTITY_NOT_FOUND}: ${entity}. ${ERR_MESSAGE.NOT_FOUND_HINT}`,

@@ -7,16 +7,15 @@ import { Wish } from 'src/wishes/entities/wish.entity';
 import { Wishlist } from './entities/wishlist.entity';
 import { WishesModule } from 'src/wishes/wishes.module';
 import { UsersModule } from 'src/users/users.module';
-import { UsersService } from 'src/users/users.service';
 
 @Module({
-  imports: [ 
-    TypeOrmModule.forFeature([ Wish, User, Wishlist ]),
+  imports: [
+    TypeOrmModule.forFeature([Wish, User, Wishlist]),
     WishesModule,
     forwardRef(() => UsersModule),
   ],
   controllers: [WishlistsController],
   providers: [WishlistsService],
-  exports: [WishlistsService]
+  exports: [WishlistsService],
 })
 export class WishlistsModule {}

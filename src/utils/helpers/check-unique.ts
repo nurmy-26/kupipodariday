@@ -2,14 +2,21 @@ import { BadRequestException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 
 // проверяем, не содержится ли уже в БД записей с введенными полями (проверка полей на уникальность)
-async function checkUnique<T>(repository: Repository<T>, criteria: Array<Partial<T>>, errorMessage: string, excludeId?: number): Promise<void> {
+async function checkUnique<T>(
+  repository: Repository<T>,
+  criteria: Array<Partial<T>>,
+  errorMessage: string,
+  excludeId?: number,
+): Promise<void> {
   const queryBuilder = repository.createQueryBuilder('entity');
 
   criteria.forEach((criterion, index) => {
     const [field] = Object.keys(criterion);
     const [value] = Object.values(criterion);
 
-    queryBuilder.orWhere(`entity.${field} = :value${index}`, { [`value${index}`]: value });
+    queryBuilder.orWhere(`entity.${field} = :value${index}`, {
+      [`value${index}`]: value,
+    });
   });
 
   // если нужно исключить запись из проверки

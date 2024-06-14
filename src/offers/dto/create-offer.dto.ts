@@ -1,5 +1,11 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, Min } from "class-validator"
+import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  Min,
+} from 'class-validator';
 
 export class CreateOfferDto {
   @IsNumber()
@@ -7,10 +13,13 @@ export class CreateOfferDto {
   @IsNotEmpty()
   @ApiProperty({ example: 100, description: 'Сумма поддержки' })
   amount: number;
-  
+
   @IsBoolean()
   @IsOptional()
-  @ApiProperty({ example: false, description: 'Показывать ли информацию о скидывающемся в списке' })
+  @ApiProperty({
+    example: false,
+    description: 'Показывать ли информацию о скидывающемся в списке',
+  })
   hidden?: boolean;
 
   @IsNumber()

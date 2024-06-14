@@ -9,13 +9,13 @@ import { Offer } from './entities/offer.entity';
 import { WishesModule } from 'src/wishes/wishes.module';
 
 @Module({
-  imports: [ 
-    TypeOrmModule.forFeature([ Offer, User, Wish ]),
+  imports: [
+    TypeOrmModule.forFeature([Offer, User, Wish]),
     forwardRef(() => UsersModule),
     forwardRef(() => WishesModule),
   ],
   controllers: [OffersController],
   providers: [OffersService],
-  exports: [OffersService]
+  exports: [OffersService],
 })
 export class OffersModule {}

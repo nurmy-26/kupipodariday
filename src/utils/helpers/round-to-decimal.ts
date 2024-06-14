@@ -1,8 +1,9 @@
 // округление числа до сотых
 const roundToDecimal = (value: number) => {
-  console.log('Вызов roundValues')
+  // console.log('Вызов roundValues')
   if (value !== undefined) {
-    console.log('Вызов roundValues для ${value}')
+    // console.log('Вызов roundValues для ${value}')
+
     // if (typeof value === 'number') {
     //   value = parseFloat(value.toFixed(2));
     // } else if (typeof value === 'string') {
@@ -13,7 +14,7 @@ const roundToDecimal = (value: number) => {
     // }
     value = parseFloat(value.toFixed(2));
   }
-  console.log(value)
-}
+  // console.log(value)
+};
 
 export default roundToDecimal;

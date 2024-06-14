@@ -14,22 +14,22 @@ export class OffersService {
     @InjectRepository(Offer)
     private readonly offersRepository: Repository<Offer>,
     private readonly usersService: UsersService,
-    private readonly wishesService: WishesService
+    private readonly wishesService: WishesService,
   ) {}
 
   async create(dto: CreateOfferDto, userId: number) {
-    const itemId = (dto.itemId).toString();
+    const itemId = dto.itemId.toString();
 
     // перед тем как создавать - находим пользователя и желание
     const user = await this.usersService.findById(userId);
-    const item = await this.wishesService.findWishById(dto.itemId)
+    const item = await this.wishesService.findWishById(dto.itemId);
 
     const isSameUser = userId === item.owner.id; // жертвует на свой же подарок?
     if (isSameUser) {
       throw new BadRequestException(ERR_MESSAGE.FORBIDDEN_USER);
     }
 
-    const offerIsTooMuch = dto.amount > (item.price - item.raised); // пожертвование больше, чем остаток для сбора?
+    const offerIsTooMuch = dto.amount > item.price - item.raised; // пожертвование больше, чем остаток для сбора?
     if (offerIsTooMuch) {
       throw new BadRequestException(ERR_MESSAGE.SUM_IS_TOO_MUCH);
     }
@@ -42,18 +42,17 @@ export class OffersService {
       const operations = [
         this.wishesService.updateRaised(dto.amount, itemId), // обновляем raised
         this.offersRepository.save({
-          item, 
+          item,
           amount: dto.amount,
           hidden: dto.hidden,
-          user
-        }) // создаем offer
+          user,
+        }), // создаем offer
       ];
 
       await Promise.all(operations);
 
       await queryRunner.commitTransaction();
       // return 'Удалось внести пожертвование';
-
     } catch (err) {
       await queryRunner.rollbackTransaction();
 
@@ -71,7 +70,7 @@ export class OffersService {
     const numericId = Number(id);
 
     return await this.offersRepository.findOneOrFail({
-      where: { id: numericId }
+      where: { id: numericId },
     });
   }
 }

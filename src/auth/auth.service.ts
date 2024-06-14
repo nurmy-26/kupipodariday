@@ -22,13 +22,15 @@ export class AuthService {
         id: true,
         username: true,
         password: true,
-      }
+      },
     });
 
     const isVerified = await verifyHash(password, user.password);
     if (user && isVerified) {
-      const { password, ...res } = user;
-      return res;
+      // извлекаем из user всё, кроме пароля:
+      // eslint-disable-next-line
+      const { password, ...rest } = user;
+      return rest;
     }
 
     return null;
@@ -40,6 +42,6 @@ export class AuthService {
 
     return {
       access_token: token,
-    }
+    };
   }
 }

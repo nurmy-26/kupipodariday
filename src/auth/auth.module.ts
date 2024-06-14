@@ -11,13 +11,14 @@ import { JwtConfigFactory } from 'src/config/jwt-config.factory';
 @Module({
   imports: [
     PassportModule, // чтоб заработали стратегии
-    JwtModule.registerAsync({ // аналог TypeORM.forRootAsync
+    JwtModule.registerAsync({
+      // аналог TypeORM.forRootAsync
       useClass: JwtConfigFactory,
     }),
     forwardRef(() => UsersModule),
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtConfigFactory],
-  exports: [AuthService]
+  exports: [AuthService],
 })
 export class AuthModule {}

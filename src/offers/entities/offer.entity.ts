@@ -1,8 +1,15 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { User } from "src/users/entities/user.entity";
-import { DateBaseEntity } from "src/utils/base-entities/date-base.entity";
-import { Wish } from "src/wishes/entities/wish.entity";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from 'src/users/entities/user.entity';
+import { DateBaseEntity } from 'src/utils/base-entities/date-base.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Offer extends DateBaseEntity {
@@ -18,7 +25,10 @@ export class Offer extends DateBaseEntity {
   amount: number;
 
   @Column({ default: false })
-  @ApiProperty({ example: false, description: 'Показывать ли информацию о скидывающемся в списке' })
+  @ApiProperty({
+    example: false,
+    description: 'Показывать ли информацию о скидывающемся в списке',
+  })
   hidden: boolean;
 
   @ManyToOne(() => User, (user) => user.offers)

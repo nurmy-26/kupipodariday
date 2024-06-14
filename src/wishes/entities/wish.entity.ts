@@ -1,15 +1,22 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Length, Min } from "class-validator";
-import { Offer } from "src/offers/entities/offer.entity";
-import { UserPublicResponseDto } from "src/users/dto/user-public-profile-response.dto";
-import { User } from "src/users/entities/user.entity";
-import { DateBaseEntity } from "src/utils/base-entities/date-base.entity";
-import roundToDecimal from "src/utils/helpers/round-to-decimal";
-import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { ApiProperty } from '@nestjs/swagger';
+import { Length, Min } from 'class-validator';
+import { Offer } from 'src/offers/entities/offer.entity';
+import { UserPublicResponseDto } from 'src/users/dto/user-public-profile-response.dto';
+import { User } from 'src/users/entities/user.entity';
+import { DateBaseEntity } from 'src/utils/base-entities/date-base.entity';
+import roundToDecimal from 'src/utils/helpers/round-to-decimal';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Wish extends DateBaseEntity {
-
   @PrimaryGeneratedColumn()
   @ApiProperty({ example: 1, description: 'Уникальный идентификатор' })
   id: number;
@@ -20,11 +27,17 @@ export class Wish extends DateBaseEntity {
   name: string;
 
   @Column()
-  @ApiProperty({ example: 'https://example.com', description: 'Ссылка на подарок' })
+  @ApiProperty({
+    example: 'https://example.com',
+    description: 'Ссылка на подарок',
+  })
   link: string;
 
   @Column()
-  @ApiProperty({ example: 'https://example.com', description: 'Ссылка на изображение подарка' })
+  @ApiProperty({
+    example: 'https://example.com',
+    description: 'Ссылка на изображение подарка',
+  })
   image: string;
 
   // @Column({ type: 'decimal', scale: 2, default: 1 })
@@ -45,10 +58,13 @@ export class Wish extends DateBaseEntity {
 
   @Column()
   @Length(1, 1024)
-  @ApiProperty({ example: 'Теплые и мягкие носки с ярким принтом', description: 'Описание подарка' })
+  @ApiProperty({
+    example: 'Теплые и мягкие носки с ярким принтом',
+    description: 'Описание подарка',
+  })
   description: string;
 
-  // 1 - описывает с какой сущностью связываем; 
+  // 1 - описывает с какой сущностью связываем;
   // 2 - явно указываем с каким полем происходит связь (в user должно быть поле wishes)
   @ManyToOne(() => User, (user) => user.wishes)
   @ApiProperty({ type: UserPublicResponseDto })

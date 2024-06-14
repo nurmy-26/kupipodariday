@@ -1,10 +1,17 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { Length } from "class-validator";
-import { UserPublicResponseDto } from "src/users/dto/user-public-profile-response.dto";
-import { User } from "src/users/entities/user.entity";
-import { DateBaseEntity } from "src/utils/base-entities/date-base.entity";
-import { Wish } from "src/wishes/entities/wish.entity";
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { ApiProperty } from '@nestjs/swagger';
+import { Length } from 'class-validator';
+import { UserPublicResponseDto } from 'src/users/dto/user-public-profile-response.dto';
+import { User } from 'src/users/entities/user.entity';
+import { DateBaseEntity } from 'src/utils/base-entities/date-base.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import {
+  Column,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Wishlist extends DateBaseEntity {
@@ -18,7 +25,10 @@ export class Wishlist extends DateBaseEntity {
   name: string;
 
   @Column()
-  @ApiProperty({ example: 'https://example.com', description: 'Ссылка на изображение' })
+  @ApiProperty({
+    example: 'https://example.com',
+    description: 'Ссылка на изображение',
+  })
   image: string;
 
   @ManyToOne(() => User, (user) => user.wishlists)

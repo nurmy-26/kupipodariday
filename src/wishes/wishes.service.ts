@@ -1,4 +1,9 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, Logger, NotFoundException, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
@@ -6,7 +11,12 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersService } from 'src/users/users.service';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { ERR_MESSAGE } from 'src/utils/constants/error-messages';
-import { ASC, DESC, LAST_WISHES, TOP_WISHES } from 'src/utils/constants/data-base';
+import {
+  ASC,
+  DESC,
+  LAST_WISHES,
+  TOP_WISHES,
+} from 'src/utils/constants/data-base';
 
 export type WishPaginator = {
   data: Wish[];
@@ -14,7 +24,7 @@ export type WishPaginator = {
   siz: number;
   totalCount: number;
   totalPage: number;
-}
+};
 
 @Injectable()
 export class WishesService {
@@ -22,7 +32,7 @@ export class WishesService {
   constructor(
     private dataSource: DataSource,
     @InjectRepository(Wish) private readonly wishRepository: Repository<Wish>,
-    private readonly usersService: UsersService // инжектим UsersService, так как инжектить репозиторий другого модуля плохая практика
+    private readonly usersService: UsersService, // инжектим UsersService, так как инжектить репозиторий другого модуля плохая практика
   ) {}
 
   async create(createWishDto: CreateWishDto, userId: number) {
@@ -38,19 +48,19 @@ export class WishesService {
       wishId = Number(wishId);
     }
     return await this.wishRepository.findOneOrFail({
-      where: {id: wishId },
-      relations: ['owner']
-    })
+      where: { id: wishId },
+      relations: ['owner', 'offers'],
+    });
   }
 
   async findAllByIds(wishesIdList: number[]) {
-    let res: Wish[] = [];
+    const res: Wish[] = [];
     for (let i = 0; i < wishesIdList.length - 1; i++) {
       const wish = await this.wishRepository.findOneOrFail({
         where: { id: wishesIdList[i] },
-        // order: { copied: ASC },
-        relations: ['owner', 'offers']
-      })
+        order: { id: ASC },
+        relations: ['owner', 'offers'],
+      });
       res.push(wish);
     }
     return res;
@@ -78,8 +88,8 @@ export class WishesService {
     return await this.wishRepository.find({
       order: { createdAt: DESC },
       take: LAST_WISHES,
-      relations: ['owner', 'offers']
-    })
+      relations: ['owner', 'offers'],
+    });
   }
 
   async getTopWishes() {
@@ -87,15 +97,12 @@ export class WishesService {
     return await this.wishRepository.find({
       order: { copied: DESC },
       take: TOP_WISHES,
-      relations: ['owner', 'offers']
-    })
+      relations: ['owner', 'offers'],
+    });
   }
 
   // метод для исп-я в других методах (поиск по СВОИМ подаркам)
-  async findOwnerWishById(
-    id: string,
-    userId: number
-  ) {
+  async findOwnerWishById(id: string, userId: number) {
     const numericId = Number(id);
     if (isNaN(numericId)) {
       throw new BadRequestException(ERR_MESSAGE.INVALID_DATA);
@@ -103,7 +110,7 @@ export class WishesService {
 
     const wish = await this.wishRepository.findOneOrFail({
       where: { id: numericId },
-      relations: ['owner', 'offers']
+      relations: ['owner', 'offers'],
     });
 
     if (wish.owner.id !== userId) {
@@ -116,8 +123,8 @@ export class WishesService {
   async findWishesByOwnerId(ownerId: number) {
     return await this.wishRepository.find({
       where: { owner: { id: ownerId } },
-      relations: ['owner']
-    })
+      relations: ['owner'],
+    });
   }
 
   async findWishesByUsername(username: string) {
@@ -136,8 +143,8 @@ export class WishesService {
         description: true,
         offers: true,
       },
-      relations: ['offers'] // какие связанные поля прислать в ответе
-    })
+      relations: ['offers'], // какие связанные поля прислать в ответе
+    });
   }
 
   async findOne(id: string, userId: number) {
@@ -156,9 +163,9 @@ export class WishesService {
 
     this.wishRepository.save({
       ...wish,
-      ...dto
+      ...dto,
     });
-    return "Желание успешно изменено!";
+    return 'Желание успешно изменено!';
   }
 
   async remove(id: string, userId: number) {
@@ -195,7 +202,7 @@ export class WishesService {
         this.wishRepository.save({
           ...wish,
           copied: wish.copied + 1,
-        })
+        }),
       ];
 
       await Promise.all(operations);
@@ -203,7 +210,6 @@ export class WishesService {
       // если все операции успешны, коммитим транзакцию
       await queryRunner.commitTransaction();
       return 'Удалось создать копию';
-
     } catch (err) {
       this.logger.log(err);
       this.logger.log(err.message);

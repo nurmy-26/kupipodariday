@@ -14,7 +14,7 @@ import { AuthUserId } from 'src/utils/decorators/user.decorator';
 import { WishesService } from 'src/wishes/wishes.service';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
-import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserPublicResponseDto } from './dto/user-public-profile-response.dto';
 import { UserWishesDto } from './dto/user-wishes.dto';
@@ -32,19 +32,22 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Получение текущего пользователя' })
   @Get('me')
-  async findById(@AuthUserId() userId: User["id"]): Promise<UserResponseDto> {
+  async findById(@AuthUserId() userId: User['id']): Promise<UserResponseDto> {
     return await this.usersService.findUserById(userId);
   }
 
   @ApiOperation({ summary: 'Получение желаний текущего пользователя' })
   @Get('me/wishes')
-  async findSelfWishes(@AuthUserId() userId: User["id"]): Promise<Wish[]> {
+  async findSelfWishes(@AuthUserId() userId: User['id']): Promise<Wish[]> {
     return await this.wishesService.findWishesByOwnerId(userId);
   }
 
   @ApiOperation({ summary: 'Изменение текущего пользователя' })
   @Patch('me')
-  async updateSelf(@AuthUserId() user: User, @Body() dto: UpdateUserDto): Promise<UserResponseDto> {
+  async updateSelf(
+    @AuthUserId() user: User,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     const { id } = user;
     return this.usersService.update(id, dto);
   }
@@ -57,13 +60,17 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Получение пользователя по username' })
   @Get(':username')
-  async findUserByUsername(@Param('username') username: string): Promise<UserPublicResponseDto> {
+  async findUserByUsername(
+    @Param('username') username: string,
+  ): Promise<UserPublicResponseDto> {
     return await this.usersService.findByUsername(username);
   }
 
   @ApiOperation({ summary: 'Получение желаний пользователя' })
   @Get(':username/wishes')
-  async findWishesByUsername(@Param('username') username: string): Promise<UserWishesDto[]> {
+  async findWishesByUsername(
+    @Param('username') username: string,
+  ): Promise<UserWishesDto[]> {
     return await this.wishesService.findWishesByUsername(username);
   }
 }

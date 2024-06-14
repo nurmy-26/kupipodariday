@@ -24,15 +24,16 @@ async function start() {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 
-  app.useGlobalPipes(new ValidationPipe({ // без этого не сработает валидация
-    transform: true, 
-    forbidNonWhitelisted: true, // вызовет ошибку при наличии полей, не указанных в DTO
-   }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      // без этого не сработает валидация
+      transform: true,
+      forbidNonWhitelisted: true, // вызовет ошибку при наличии полей, не указанных в DTO
+    }),
+  );
 
   // глобальные фильтры исключений
-  app.useGlobalFilters(
-    new EntityNotFoundErrorFilter(),
-  );
+  app.useGlobalFilters(new EntityNotFoundErrorFilter());
 
   await app.listen(PORT, () => {
     console.log(`✅ Сервер запущен на порту: 💻 ${PORT}`);

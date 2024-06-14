@@ -11,8 +11,8 @@ import { OffersModule } from 'src/offers/offers.module';
 import { WishlistsModule } from 'src/wishlists/wishlists.module';
 
 @Module({
-  imports: [ 
-    TypeOrmModule.forFeature([ User, Wish, Wishlist, Offer ]),
+  imports: [
+    TypeOrmModule.forFeature([User, Wish, Wishlist, Offer]),
     forwardRef(() => WishesModule),
     forwardRef(() => OffersModule),
     forwardRef(() => WishlistsModule),

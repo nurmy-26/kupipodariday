@@ -41,7 +41,7 @@ import { AppController } from './app.controller';
     }),
     // подключение к базе данных
     TypeOrmModule.forRootAsync({
-      useClass: DatabaseConfigFactory
+      useClass: DatabaseConfigFactory,
     }),
     // подключение остальных модулей
     UsersModule,

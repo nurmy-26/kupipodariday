@@ -24,7 +24,11 @@ export class OffersController {
 
   @ApiOperation({ summary: 'Создание нового пожертвования' })
   @Post()
-  async create(@Body() dto: CreateOfferDto, @AuthUserId() userId: User["id"], @Res() res: Response) {
+  async create(
+    @Body() dto: CreateOfferDto,
+    @AuthUserId() userId: User['id'],
+    @Res() res: Response,
+  ) {
     await this.offersService.create(dto, userId);
     res.status(201).json({});
   }
