@@ -3,40 +3,45 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
+  UseGuards,
+  Res,
 } from '@nestjs/common';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guard/jwt.auth.guard';
+import { AuthUserId } from 'src/utils/decorators/user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import { Offer } from './entities/offer.entity';
+import { Response } from 'express';
 
+@UseGuards(JwtAuthGuard)
+@ApiTags('offers')
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
+  @ApiOperation({ summary: 'Создание нового пожертвования' })
   @Post()
-  create(@Body() createOfferDto: CreateOfferDto) {
-    return this.offersService.create(createOfferDto);
+  async create(
+    @Body() dto: CreateOfferDto,
+    @AuthUserId() userId: User['id'],
+    @Res() res: Response,
+  ) {
+    await this.offersService.create(dto, userId);
+    res.status(201).json({});
   }
 
+  @ApiOperation({ summary: 'Получение всех пожертвований' })
   @Get()
-  findAll() {
-    return this.offersService.findAll();
+  async findAll(): Promise<Offer[]> {
+    return await this.offersService.findAll();
   }
 
+  @ApiOperation({ summary: 'Получение пожертвования по id' })
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.offersService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOfferDto: UpdateOfferDto) {
-    return this.offersService.update(+id, updateOfferDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.offersService.remove(+id);
+  async findOne(@Param('id') id: string): Promise<Offer> {
+    return await this.offersService.findOne(id);
   }
 }
