@@ -52,6 +52,9 @@ export class WishlistsService {
 
   async findById(id: string) {
     const numericId = Number(id);
+    if (isNaN(numericId)) {
+      throw new BadRequestException(ERR_MESSAGE.INVALID_DATA);
+    }
 
     return await this.wishlistsRepository.findOneOrFail({
       where: { id: numericId },

@@ -6,7 +6,7 @@
 
 ## Используемые технологии и решения
 - Typescript в качестве основного языка проекта;
-- PostgreSQL и ORM для хранения данных;
+- PostgreSQL и TypeORM для хранения данных;
 - Nest.js, Nest CLI, CRUD-методы;
 - class-validator и class-transformer для валидации;
 - Passport.js, JWT и bcrypt для аутентификации;
@@ -33,3 +33,9 @@ npm i
 ```shell
 npm start
 ```
+
+#### Все возможные маршруты API доступны по адресу
+```shell
+{yourBaseUrl}/api
+```
+Например: http://localhost:5000/api
